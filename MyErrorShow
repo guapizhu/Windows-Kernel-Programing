@@ -1,0 +1,48 @@
+#include <iostream>
+#include <Windows.h>
+#include<stdio.h>
+
+DWORD Inquiry()
+{
+	printf("请输入ErrorCode(输入-1结束程序)：");
+	DWORD i;
+	scanf_s("%d", &i);
+	return i;
+}
+
+void Format(DWORD dwErrorcode , LPTSTR lpBuffer)		//通过errorcode返回字符串buffer
+{
+	BOOL bflag = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM // Getlasterror function
+		| FORMAT_MESSAGE_IGNORE_INSERTS //the Arguments parameter is ignored.
+		| FORMAT_MESSAGE_ALLOCATE_BUFFER //places a pointer to the allocated buffer
+		, NULL							//ignore
+		, dwErrorcode					//Specifies the message identifier 
+		, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL) //make language ID
+		, (LPTSTR)& lpBuffer			//for the FORMAT_MESSAGE_ALLOCATE_BUFFER , the argument is a pointer to pointer
+		, 0, NULL);
+
+	if (bflag == 0)
+	{
+		printf("FormatMessage error!");
+		ExitProcess(0);
+	}
+	_wsetlocale(LC_ALL, L"chs");
+	wprintf(TEXT("%s\n"), lpBuffer);
+	LocalFree((HLOCAL)lpBuffer);
+
+}
+
+
+int main()
+{
+	DWORD dwID = Inquiry();
+
+	while (dwID != -1)
+	{
+		LPTSTR lpBuffer = NULL;
+		Format(dwID, lpBuffer);
+		dwID = Inquiry();
+	}
+	
+
+}
